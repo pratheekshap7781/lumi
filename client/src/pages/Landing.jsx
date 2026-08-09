@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 
 // Placeholder Landing page. This will be replaced with the real
@@ -23,9 +24,22 @@ export default function Landing() {
       <p style={{ color: "var(--color-text-muted)" }}>
         Your learning journey, with Lumi by your side.
       </p>
-      <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
-        Project foundation set up successfully.
-      </p>
+      <div className="flex gap-3 mt-2">
+        <Link
+          to="/signup"
+          className="rounded-lg px-4 py-2 text-sm font-medium text-white"
+          style={{ backgroundColor: "var(--color-accent)" }}
+        >
+          Sign up
+        </Link>
+        <Link
+          to="/login"
+          className="rounded-lg px-4 py-2 text-sm border"
+          style={{ borderColor: "var(--color-text-muted)" }}
+        >
+          Log in
+        </Link>
+      </div>
     </div>
   );
 }
