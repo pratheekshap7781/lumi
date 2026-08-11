@@ -3,25 +3,70 @@
 @tailwind utilities;
 
 /*
-  Theme color variables.
-  These are placeholders — the exact palette will be refined later.
-  Keeping colors as variables now means we only have to update them
-  in one place once the real palette is chosen.
+  Lumi visual identity — light, calm, mostly white/pale-blue, with color
+  used sparingly for accents. Purple is reserved for the Lumi orb itself
+  rather than covering the interface. Everything is a CSS variable so
+  both themes stay in sync and every component pulls from one palette.
 */
 :root {
-  --color-bg: #fafafa;
+  --color-bg: #f5f8fc;
+  --color-bg-subtle: #edf1f9;
   --color-surface: #ffffff;
-  --color-text: #1f2937;
-  --color-text-muted: #6b7280;
-  --color-accent: #6366f1;
+  --color-surface-glass: rgba(255, 255, 255, 0.7);
+  --color-border: #e4e9f2;
+  --color-text: #1f2533;
+  --color-text-muted: #667085;
+  --color-accent: #4c6fff;
+  --color-accent-strong: #3956e0;
+  --color-accent-soft: #eaf0ff;
+
+  /* Very pale gradient used behind the full-screen onboarding moment */
+  --color-hero-from: #edeffc;
+  --color-hero-via: #f3eaf7;
+  --color-hero-to: #e7f3fa;
+
+  /* Barely-there atmospheric glows behind the dashboard page */
+  --color-blob-1: #cfe0ff;
+  --color-blob-2: #e3dbff;
+  --color-blob-3: #ffe1ee;
 }
 
 .dark {
-  --color-bg: #111827;
-  --color-surface: #1f2937;
-  --color-text: #f3f4f6;
-  --color-text-muted: #9ca3af;
-  --color-accent: #818cf8;
+  --color-bg: #0e1120;
+  --color-bg-subtle: #161a2e;
+  --color-surface: #1a1e33;
+  --color-surface-glass: rgba(26, 30, 51, 0.65);
+  --color-border: #2a3050;
+  --color-text: #e7e9f5;
+  --color-text-muted: #9099b8;
+  --color-accent: #7c93ff;
+  --color-accent-strong: #94a7ff;
+  --color-accent-soft: #232b4e;
+
+  --color-hero-from: #1b2140;
+  --color-hero-via: #221c3c;
+  --color-hero-to: #16233e;
+
+  --color-blob-1: #1e2a4e;
+  --color-blob-2: #241d42;
+  --color-blob-3: #331f35;
+}
+
+.glass-card {
+  background: var(--color-surface-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Respect users who've asked for less motion — the Lumi orb's float,
+   glow pulse, and sparkles all pause. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-floatY,
+  .animate-pulseGlow,
+  .animate-sparkle,
+  .animate-spin {
+    animation: none;
+  }
 }
 
 body {

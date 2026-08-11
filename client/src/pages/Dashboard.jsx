@@ -1,30 +1,54 @@
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import DashboardLayout from "../components/dashboard/DashboardLayout";
+import LumiHero from "../components/dashboard/LumiHero";
+import ProgressOverview from "../components/dashboard/ProgressOverview";
+import CurrentPath from "../components/dashboard/CurrentPath";
+import LearningPathsPreview from "../components/dashboard/LearningPathsPreview";
+import UploadCard from "../components/dashboard/UploadCard";
+import RecentActivity from "../components/dashboard/RecentActivity";
+import Footer from "../components/dashboard/Footer";
+import { currentLearningPath, learningPaths, overallStats, recentActivity } from "../data/mockDashboard";
 
-// Placeholder only — the real dashboard (Continue Learning, My Learning
-// Paths, Overall Progress, Upload) is built in a later stage.
+// A brand-new student has no real learning data, so every stat here
+// defaults to an honest zero rather than a hidden "no data" message.
+const EMPTY_STATS = { topicsCompleted: 0, quizzesCompleted: 0, studyTimeMinutes: 0, overallProgress: 0 };
+
+// ---------------------------------------------------------------------
+// This flag controls mock ("active user") content vs. the real empty
+// state. It defaults to false because no Learning Path feature exists
+// yet to produce real data — a fresh signup should never see fake
+// progress.
+//
+// TODO (future stage): once Learning Paths are generated and stored in
+// MongoDB, replace this with a real check, e.g.:
+//   const hasLearningData = learningPaths.length > 0;
+// where `learningPaths` comes from an API call instead of mock data.
+// ---------------------------------------------------------------------
+const hasLearningData = false;
+
 export default function Dashboard() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
 
-  async function handleLogout() {
-    await logout();
-    navigate("/login");
-  }
+  const stats = hasLearningData ? overallStats : EMPTY_STATS;
+  const activePath = hasLearningData ? currentLearningPath : null;
+  const paths = hasLearningData ? learningPaths : [];
+  const activity = hasLearningData ? recentActivity : [];
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4 px-4">
-      <h1 className="text-3xl font-semibold">Welcome back, {user?.name}</h1>
-      <p style={{ color: "var(--color-text-muted)" }}>
-        Your dashboard will live here soon.
-      </p>
-      <button
-        onClick={handleLogout}
-        className="mt-4 rounded-lg px-5 py-2 text-sm border"
-        style={{ borderColor: "var(--color-text-muted)" }}
-      >
-        Log out
-      </button>
-    </div>
+    <DashboardLayout>
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8 flex flex-col gap-10">
+        <LumiHero userName={user?.name} hasLearningData={hasLearningData} />
+        <ProgressOverview stats={stats} />
+        <CurrentPath path={activePath} />
+        <LearningPathsPreview paths={paths} />
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <UploadCard />
+          <RecentActivity activity={activity} />
+        </div>
+
+        <Footer />
+      </div>
+    </DashboardLayout>
   );
 }

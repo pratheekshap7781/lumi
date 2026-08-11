@@ -1,0 +1,8 @@
+// Returns "Good morning" / "Good afternoon" / "Good evening" based on
+// the current local time.
+export function getTimeOfDayGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+}
