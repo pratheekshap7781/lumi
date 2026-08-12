@@ -1,13 +1,32 @@
 import { Link } from "react-router-dom";
-import { Compass, Plus, Code2 } from "lucide-react";
+import { Compass, Plus, Code2, FileText } from "lucide-react";
 import ProgressBar from "./ProgressBar";
+
+const AWAITING_COPY = {
+  uploaded: {
+    title: "Your material has been uploaded.",
+    description: "Ready for Lumi to process.",
+  },
+  processing: {
+    title: "Processing your material...",
+    description: "This won't take long.",
+  },
+  failed: {
+    title: "Something went wrong processing your material.",
+    description: "Try uploading it again.",
+  },
+};
 
 // `path` is null for a user with no active learning path — shown as an
 // inviting prompt to upload, never as fake progress. Once a real path
 // exists (from an upload → Lumi processing → path generation), pass
 // the real path object here instead and this same component renders
 // the active view.
-export default function CurrentPath({ path }) {
+//
+// `latestMaterial` (used only when `path` is null) reflects a real
+// uploaded file that hasn't been turned into a path yet — this is
+// honest status, not a fabricated learning path.
+export default function CurrentPath({ path, latestMaterial }) {
   return (
     <section>
       <h2 className="font-semibold mb-3">Current Path</h2>
@@ -50,6 +69,26 @@ export default function CurrentPath({ path }) {
             >
               Continue
             </Link>
+          </div>
+        </div>
+      ) : latestMaterial ? (
+        <div
+          className="rounded-2xl border p-6 sm:p-8 flex items-center gap-4"
+          style={{ backgroundColor: "var(--color-surface)", borderColor: "var(--color-border)" }}
+        >
+          <div
+            className="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
+            style={{ backgroundColor: "var(--color-accent-soft)" }}
+          >
+            <FileText size={24} style={{ color: "var(--color-accent-strong)" }} />
+          </div>
+          <div>
+            <p className="font-medium">
+              {(AWAITING_COPY[latestMaterial.status] || AWAITING_COPY.uploaded).title}
+            </p>
+            <p className="text-sm mt-0.5" style={{ color: "var(--color-text-muted)" }}>
+              {(AWAITING_COPY[latestMaterial.status] || AWAITING_COPY.uploaded).description}
+            </p>
           </div>
         </div>
       ) : (

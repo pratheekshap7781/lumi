@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import { connectDB } from "./config/db.js";
 import healthRouter from "./routes/health.js";
 import authRouter from "./routes/auth.js";
+import materialsRouter from "./routes/materials.js";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use(cookieParser());
 // Routes
 app.use("/api/health", healthRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/materials", materialsRouter);
 
 async function start() {
   await connectDB();

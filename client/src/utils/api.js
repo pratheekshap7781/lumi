@@ -19,6 +19,25 @@ async function request(path, options = {}) {
   return data;
 }
 
+// Separate from request() above because file uploads need
+// multipart/form-data — the browser sets that Content-Type (with the
+// correct boundary) automatically as long as we don't set our own.
+async function uploadRequest(path, formData) {
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(data.error || "Something went wrong. Please try again.");
+  }
+
+  return data;
+}
+
 export const authApi = {
   signup: (payload) =>
     request("/auth/signup", { method: "POST", body: JSON.stringify(payload) }),
@@ -27,4 +46,14 @@ export const authApi = {
   logout: () => request("/auth/logout", { method: "POST" }),
   me: () => request("/auth/me"),
   completeOnboarding: () => request("/auth/onboarding", { method: "PATCH" }),
+};
+
+export const materialsApi = {
+  upload: (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return uploadRequest("/materials", formData);
+  },
+  list: () => request("/materials"),
+  remove: (id) => request(`/materials/${id}`, { method: "DELETE" }),
 };

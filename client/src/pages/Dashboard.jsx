@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import DashboardLayout from "../components/dashboard/DashboardLayout";
 import LumiHero from "../components/dashboard/LumiHero";
@@ -7,6 +8,7 @@ import LearningPathsPreview from "../components/dashboard/LearningPathsPreview";
 import UploadCard from "../components/dashboard/UploadCard";
 import RecentActivity from "../components/dashboard/RecentActivity";
 import Footer from "../components/dashboard/Footer";
+import { materialsApi } from "../utils/api";
 import { currentLearningPath, learningPaths, overallStats, recentActivity } from "../data/mockDashboard";
 
 // A brand-new student has no real learning data, so every stat here
@@ -28,6 +30,16 @@ const hasLearningData = false;
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const [latestMaterial, setLatestMaterial] = useState(null);
+
+  // Materials are real (not mock) — fetched regardless of hasLearningData,
+  // since a student can have uploaded a file without a path existing yet.
+  useEffect(() => {
+    materialsApi
+      .list()
+      .then((data) => setLatestMaterial(data.materials[0] || null))
+      .catch(() => setLatestMaterial(null));
+  }, []);
 
   const stats = hasLearningData ? overallStats : EMPTY_STATS;
   const activePath = hasLearningData ? currentLearningPath : null;
@@ -39,7 +51,7 @@ export default function Dashboard() {
       <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8 flex flex-col gap-10">
         <LumiHero userName={user?.name} hasLearningData={hasLearningData} />
         <ProgressOverview stats={stats} />
-        <CurrentPath path={activePath} />
+        <CurrentPath path={activePath} latestMaterial={activePath ? null : latestMaterial} />
         <LearningPathsPreview paths={paths} />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

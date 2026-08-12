@@ -8,6 +8,7 @@ import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import MeetLumi from "./pages/MeetLumi";
 import Dashboard from "./pages/Dashboard";
+import StudyMaterials from "./pages/StudyMaterials";
 import ComingSoon from "./pages/ComingSoon";
 
 export default function App() {
@@ -52,12 +53,7 @@ export default function App() {
               path="/study-materials"
               element={
                 <ProtectedRoute>
-                  <DashboardLayout>
-                    <ComingSoon
-                      title="Study Materials"
-                      description="Uploading PDFs, slides, and documents is coming soon — this is where you'll manage everything you've shared with Lumi."
-                    />
-                  </DashboardLayout>
+                  <StudyMaterials />
                 </ProtectedRoute>
               }
             />
