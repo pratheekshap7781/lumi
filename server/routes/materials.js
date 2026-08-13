@@ -4,7 +4,8 @@ import path from "path";
 import { requireAuth } from "../middleware/auth.js";
 import { upload, UPLOAD_DIR } from "../middleware/upload.js";
 import StudyMaterial from "../models/StudyMaterial.js";
-import { toPublicMaterial } from "../utils/formatMaterial.js";
+import { toPublicMaterial, toMaterialDetail } from "../utils/formatMaterial.js";
+import { processMaterial } from "../services/materialProcessing.js";
 
 const router = Router();
 
@@ -43,6 +44,12 @@ router.post("/", requireAuth, handleUpload, async (req, res) => {
       status: "uploaded",
     });
 
+    // Processing runs synchronously here — fine at this scale (PDFs
+    // capped at 20MB). processMaterial() takes the material and does
+    // its own save()s, so swapping this for a background job later
+    // just means calling it from a worker instead of inline.
+    await processMaterial(material);
+
     return res.status(201).json({ material: toPublicMaterial(material) });
   } catch (error) {
     console.error("Create material error:", error.message);
@@ -66,6 +73,22 @@ router.get("/", requireAuth, async (req, res) => {
   }
 });
 
+// GET /api/materials/:id — full detail (including extracted text) for the owner only
+router.get("/:id", requireAuth, async (req, res) => {
+  try {
+    const material = await StudyMaterial.findById(req.params.id);
+
+    if (!material || material.userId.toString() !== req.user._id.toString()) {
+      return res.status(404).json({ error: "Study material not found." });
+    }
+
+    return res.status(200).json({ material: toMaterialDetail(material) });
+  } catch (error) {
+    console.error("Get material error:", error.message);
+    return res.status(500).json({ error: "Something went wrong. Please try again." });
+  }
+});
+
 // DELETE /api/materials/:id — only the owner can delete their own material
 router.delete("/:id", requireAuth, async (req, res) => {
   try {
@@ -77,6 +100,9 @@ router.delete("/:id", requireAuth, async (req, res) => {
       return res.status(404).json({ error: "Study material not found." });
     }
 
+    // Removes the whole document in one go — extractedText,
+    // processedAt, and processingError all go with it, so there's no
+    // separate cleanup step needed to avoid orphaned processed data.
     await material.deleteOne();
 
     // If the file is already missing on disk, that's fine — the DB

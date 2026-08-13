@@ -26,6 +26,7 @@ export default function UploadPanel({ onUploaded }) {
   const [file, setFile] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [isDragging, setIsDragging] = useState(false);
+  const [uploadedMaterial, setUploadedMaterial] = useState(null);
   const inputRef = useRef(null);
 
   function handleFileChosen(chosenFile) {
@@ -54,6 +55,7 @@ export default function UploadPanel({ onUploaded }) {
   function resetToIdle() {
     setFile(null);
     setErrorMessage("");
+    setUploadedMaterial(null);
     setStatus("idle");
   }
 
@@ -61,6 +63,7 @@ export default function UploadPanel({ onUploaded }) {
     setStatus("uploading");
     try {
       const { material } = await materialsApi.upload(file);
+      setUploadedMaterial(material);
       setStatus("success");
       onUploaded?.(material);
     } catch (err) {
@@ -161,16 +164,35 @@ export default function UploadPanel({ onUploaded }) {
 
       {status === "success" && (
         <div className="flex flex-col items-center text-center gap-3 py-4">
-          <div
-            className="w-12 h-12 rounded-full flex items-center justify-center"
-            style={{ backgroundColor: "#4CAF7D22" }}
-          >
-            <CheckCircle2 size={24} style={{ color: "#4CAF7D" }} />
-          </div>
-          <p className="font-medium">Your material has been uploaded.</p>
-          <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
-            Ready for Lumi to process.
-          </p>
+          {uploadedMaterial?.status === "failed" ? (
+            <>
+              <div
+                className="w-12 h-12 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: "#E5484D22" }}
+              >
+                <AlertCircle size={24} style={{ color: "#E5484D" }} />
+              </div>
+              <p className="font-medium">We couldn't process this material.</p>
+              <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
+                The file uploaded, but Lumi couldn't read it. Please try a different PDF.
+              </p>
+            </>
+          ) : (
+            <>
+              <div
+                className="w-12 h-12 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: "#4CAF7D22" }}
+              >
+                <CheckCircle2 size={24} style={{ color: "#4CAF7D" }} />
+              </div>
+              <p className="font-medium">Your material has been uploaded.</p>
+              <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
+                {uploadedMaterial?.status === "ready"
+                  ? "Your material is ready for Lumi."
+                  : "Ready for Lumi to process."}
+              </p>
+            </>
+          )}
           <button
             onClick={resetToIdle}
             className="mt-1 rounded-lg px-4 py-2 text-sm font-medium border"

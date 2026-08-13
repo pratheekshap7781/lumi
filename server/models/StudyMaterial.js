@@ -40,6 +40,21 @@ const studyMaterialSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    // Set once text extraction succeeds. Undefined for records created
+    // before this stage, or for materials that failed processing —
+    // Mongoose and our own reads treat a missing field the same as
+    // "not processed yet," so older documents keep working unchanged.
+    extractedText: {
+      type: String,
+    },
+    processedAt: {
+      type: Date,
+    },
+    // A short, user-safe explanation of why processing failed (never a
+    // raw stack trace). Only meaningful when status is "failed".
+    processingError: {
+      type: String,
+    },
   },
   {
     timestamps: true,

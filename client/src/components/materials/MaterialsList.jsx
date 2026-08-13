@@ -5,7 +5,7 @@ const STATUS_LABELS = {
   uploaded: "Uploaded",
   processing: "Processing",
   ready: "Ready",
-  failed: "Failed",
+  failed: "Processing failed",
 };
 
 function formatDate(dateString) {
@@ -54,7 +54,11 @@ export default function MaterialsList({ materials, onDelete }) {
 
           <span
             className="text-xs font-medium rounded-full px-2.5 py-1 shrink-0"
-            style={{ backgroundColor: "var(--color-accent-soft)", color: "var(--color-accent-strong)" }}
+            style={
+              material.status === "failed"
+                ? { backgroundColor: "#E5484D22", color: "#E5484D" }
+                : { backgroundColor: "var(--color-accent-soft)", color: "var(--color-accent-strong)" }
+            }
           >
             {STATUS_LABELS[material.status] || material.status}
           </span>

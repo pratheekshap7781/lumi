@@ -5,15 +5,19 @@ import ProgressBar from "./ProgressBar";
 const AWAITING_COPY = {
   uploaded: {
     title: "Your material has been uploaded.",
-    description: "Ready for Lumi to process.",
+    description: "Lumi is getting ready to read it.",
   },
   processing: {
-    title: "Processing your material...",
-    description: "This won't take long.",
+    title: "Your material is being processed.",
+    description: "Lumi is reading your notes...",
+  },
+  ready: {
+    title: "Your material is ready for Lumi.",
+    description: "Lumi has finished reading it.",
   },
   failed: {
-    title: "Something went wrong processing your material.",
-    description: "Try uploading it again.",
+    title: "We couldn't process this material.",
+    description: "Please try uploading it again.",
   },
 };
 
